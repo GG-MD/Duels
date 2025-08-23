@@ -391,9 +391,17 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
         }
 
         if (config.isArenaOnlyEndMessage()) {
-            match.getArena().broadcast(message);
+            match.getArena().getPlayers().forEach(player -> {
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendActionBar(StringUtil.color(message));
+                }
+            });
         } else {
-            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
+            Bukkit.getOnlinePlayers().forEach(player -> {
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendActionBar(StringUtil.color(message));
+                }
+            });
         }
     }
 
