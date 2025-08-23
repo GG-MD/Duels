@@ -41,6 +41,7 @@ permissions:
       duels.spectate.anonymously: true
       duels.use.*: true
       duels.queue: true
+      duels.view.result.endgame: true
   duels.default:
     children:
       duels.duel: true
@@ -49,5 +50,8 @@ permissions:
       duels.top: true
   duels.duel:
     default: true
+  duels.view.result.endgame:
+    default: true
+    description: "Allows players to see duel result messages in actionbar"
 
 folia-supported: true
