@@ -390,18 +390,25 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
             return;
         }
 
+        final String coloredMessage = StringUtil.color(message);
+        
         if (config.isArenaOnlyEndMessage()) {
-            match.getArena().getPlayers().forEach(player -> {
-                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
-                    player.sendActionBar(StringUtil.color(message));
-                }
-            });
+            sendActionBarWithDuration(match.getArena().getPlayers(), coloredMessage);
         } else {
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
-                    player.sendActionBar(StringUtil.color(message));
-                }
-            });
+            sendActionBarWithDuration(Bukkit.getOnlinePlayers(), coloredMessage);
+        }
+    }
+
+    private void sendActionBarWithDuration(final Collection<? extends Player> players, final String message) {
+        for (int i = 0; i < 8; i++) {
+            final long delay = i * 5L;
+            plugin.doSyncAfter(() -> {
+                players.forEach(player -> {
+                    if (player.isOnline() && player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                        player.sendActionBar(message);
+                    }
+                });
+            }, delay);
         }
     }
 
