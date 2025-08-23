@@ -115,3 +115,10 @@ buildNumber.properties
 # Common working directory
 run/
 dependency-reduced-pom.xml
+/duels-api
+/.gradle
+/duels-plugin/build
+/duels-worldguard-v6/build
+/duels-worldguard-v7/build
+/duels-worldguard/build
+/duels-common/build
