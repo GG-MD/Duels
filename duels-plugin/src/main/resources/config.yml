@@ -264,8 +264,11 @@ duel:
   teleport-to-last-location: false
 
   # Seconds to wait before teleporting the winner after the duel.
-  # default: 5
-  teleport-delay: 5
+  teleport-delay:
+    # Delay when players use server kit (default: 5)
+    kit-duel: 5
+    # Delay when players use their own inventory (default: 10)
+    own-inventory-duel: 10
 
   # If set to 'true', a firework will spawn at the winner's location when a duel ends.
   # default: true

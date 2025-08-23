@@ -133,7 +133,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean teleportToLastLocation;
     @Getter
-    private int teleportDelay;
+    private int teleportDelayKitDuel;
+    @Getter
+    private int teleportDelayOwnInventoryDuel;
     @Getter
     private boolean spawnFirework;
     @Getter
@@ -364,7 +366,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
         blacklistedWorlds = configuration.getStringList("duel.blacklisted-worlds");
         teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
-        teleportDelay = configuration.getInt("duel.teleport-delay", 5);
+        teleportDelayKitDuel = configuration.getInt("duel.teleport-delay.kit-duel", 5);
+        teleportDelayOwnInventoryDuel = configuration.getInt("duel.teleport-delay.own-inventory-duel", 10);
         spawnFirework = configuration.getBoolean("duel.spawn-firework", true);
         arenaOnlyEndMessage = configuration.getBoolean("duel.arena-only-end-message", false);
         displayInventories = configuration.getBoolean("duel.display-inventories", true);
@@ -492,5 +495,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
             this.volume = (float) volume;
             this.messages = messages;
         }
+    }
+
+    public int getTeleportDelay(boolean isOwnInventory) {
+        return isOwnInventory ? teleportDelayOwnInventoryDuel : teleportDelayKitDuel;
     }
 }

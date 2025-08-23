@@ -131,7 +131,7 @@ public class DuelManager implements Loadable {
                 }
 
                 arena.endMatch(winner.getUniqueId(), loser.getUniqueId(), Reason.OPPONENT_DEFEAT);
-            }, null, config.getTeleportDelay() * 20L);
+            }, null, config.getTeleportDelay(match.isOwnInventory()) * 20L);
         }, 1L);
     }
 
