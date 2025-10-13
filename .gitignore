@@ -122,3 +122,4 @@ dependency-reduced-pom.xml
 /duels-worldguard-v7/build
 /duels-worldguard/build
 /duels-common/build
+.vscode/settings.json

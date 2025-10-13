@@ -74,7 +74,8 @@ public class DuelCommand extends BaseCommand {
 
         final Player target = Bukkit.getPlayerExact(args[0]);
 
-        if (target == null) {
+        // Treat vanished players as not found for players who cannot see them
+        if (target == null || !player.canSee(target)) {
             lang.sendMessage(sender, "ERROR.player.not-found", "name", args[0]);
             return true;
         }
