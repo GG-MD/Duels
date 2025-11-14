@@ -13,6 +13,7 @@ import com.meteordevelopments.duels.api.command.SubCommand;
 import com.meteordevelopments.duels.arena.ArenaManagerImpl;
 import com.meteordevelopments.duels.betting.BettingManager;
 import com.meteordevelopments.duels.command.commands.SpectateCommand;
+import com.meteordevelopments.duels.command.commands.KitCommand;
 import com.meteordevelopments.duels.command.commands.duel.DuelCommand;
 import com.meteordevelopments.duels.command.commands.duels.DuelsCommand;
 import com.meteordevelopments.duels.command.commands.queue.QueueCommand;
@@ -56,6 +57,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("deprecation")
 public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
 
     private static final int BSTATS_ID = 20778;
@@ -160,7 +162,8 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
                 new PartyCommand(this),
                 new QueueCommand(this),
                 new SpectateCommand(this),
-                new DuelsCommand(this)
+                new DuelsCommand(this),
+                new KitCommand(this)
         );
 
         for (final Loadable loadable : loadables) {
@@ -224,7 +227,7 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
     }
 
     @SafeVarargs
-    private final void registerCommands(final AbstractCommand<DuelsPlugin>... commands) {
+    private void registerCommands(final AbstractCommand<DuelsPlugin>... commands) {
         sendMessage("&eRegistering commands...");
         long start = System.currentTimeMillis();
         for (final AbstractCommand<DuelsPlugin> command : commands) {
@@ -245,7 +248,7 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
             return false;
         }
 
-        result.child(new AbstractCommand<DuelsPlugin>(this, subCommand) {
+        result.child(new AbstractCommand<>(this, subCommand) {
             @Override
             protected void execute(final CommandSender sender, final String label, final String[] args) {
                 subCommand.execute(sender, label, args);
@@ -505,6 +508,8 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         new EnderpearlListener(this);
         new KitOptionsListener(this);
         new LingerPotionListener(this);
+        new com.meteordevelopments.duels.kit.edit.KitEditManager(this);
+        registerListener(new com.meteordevelopments.duels.kit.edit.KitEditListener(this));
 
         sendMessage("&dSuccessfully loaded pre-listeners in &f[" + CC.getTimeDifferenceAndColor(start, System.currentTimeMillis()) + "&f]");
     }

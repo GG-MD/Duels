@@ -4,10 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Charsets;
 import lombok.Getter;
 import com.meteordevelopments.duels.DuelsPlugin;
+import com.meteordevelopments.duels.arena.ArenaImpl;
+import com.meteordevelopments.duels.arena.ArenaManagerImpl;
 import com.meteordevelopments.duels.config.Config;
 import com.meteordevelopments.duels.data.LocationData;
 import com.meteordevelopments.duels.data.PlayerData;
 import com.meteordevelopments.duels.hook.hooks.EssentialsHook;
+import com.meteordevelopments.duels.match.team.TeamDuelMatch;
 import com.meteordevelopments.duels.teleport.Teleport;
 import com.meteordevelopments.duels.util.Loadable;
 import com.meteordevelopments.duels.util.Log;
@@ -39,6 +42,7 @@ public class PlayerInfoManager implements Loadable {
 
     private static final String CACHE_FILE_NAME = "player-cache.json";
     private static final String LOBBY_FILE_NAME = "lobby.json"; // Assuming you still want to use JSON for lobby
+    private static final String KIT_LOBBY_FILE_NAME = "kit_lobby.json";
 
     private static final String ERROR_LOBBY_LOAD = "Could not load lobby location!";
     private static final String ERROR_LOBBY_SAVE = "Could not save lobby location!";
@@ -48,20 +52,25 @@ public class PlayerInfoManager implements Loadable {
     private final Config config;
     private final File cacheFile;
     private final File lobbyFile;
+    private final File kitlobbyFile;
 
     private final Map<UUID, PlayerInfo> cache = new HashMap<>();
 
     private Teleport teleport;
     private EssentialsHook essentials;
+    private ArenaManagerImpl arenaManager;
 
     @Getter
     private Location lobby;
+    @Getter
+    private Location kitLobby;
 
     public PlayerInfoManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfiguration();
         this.cacheFile = new File(plugin.getDataFolder(), CACHE_FILE_NAME);
         this.lobbyFile = new File(plugin.getDataFolder(), LOBBY_FILE_NAME);
+        this.kitlobbyFile = new File(plugin.getDataFolder(), KIT_LOBBY_FILE_NAME);
         plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(new PlayerInfoListener(), plugin), 1L);
     }
 
@@ -69,6 +78,7 @@ public class PlayerInfoManager implements Loadable {
     public void handleLoad() throws IOException {
         this.teleport = plugin.getTeleport();
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
+        this.arenaManager = plugin.getArenaManager();
 
         if (FileUtil.checkNonEmpty(cacheFile, false)) {
             try (final Reader reader = new InputStreamReader(new FileInputStream(cacheFile), Charsets.UTF_8)) {
@@ -92,10 +102,24 @@ public class PlayerInfoManager implements Loadable {
             }
         }
 
+        if (FileUtil.checkNonEmpty(kitlobbyFile, false)) {
+            try (final Reader reader = new InputStreamReader(Files.newInputStream(kitlobbyFile.toPath()), Charsets.UTF_8)) {
+                this.kitLobby = JsonUtil.getObjectMapper().readValue(reader, LocationData.class).toLocation();
+            } catch (IOException ex) {
+                Log.error(this, ERROR_LOBBY_LOAD, ex);
+            }
+        }
+
         // If lobby is not found or invalid, use the default world's spawn location for lobby.
         if (lobby == null || lobby.getWorld() == null) {
-            final World world = Bukkit.getWorlds().get(0);
+            final World world = Bukkit.getWorlds().getFirst();
             this.lobby = world.getSpawnLocation();
+            Log.warn(this, String.format(ERROR_LOBBY_DEFAULT, world.getName()));
+        }
+
+        if (kitLobby == null || kitLobby.getWorld() == null) {
+            final World world = Bukkit.getWorlds().getFirst();
+            this.kitLobby = world.getSpawnLocation();
             Log.warn(this, String.format(ERROR_LOBBY_DEFAULT, world.getName()));
         }
     }
@@ -151,6 +175,20 @@ public class PlayerInfoManager implements Loadable {
         }
     }
 
+    public boolean setKitLobby(final Player player) {
+        final Location lobby = player.getLocation().clone();
+
+        try (final Writer writer = new OutputStreamWriter(Files.newOutputStream(kitlobbyFile.toPath()), Charsets.UTF_8)) {
+            JsonUtil.getObjectWriter().writeValue(writer, LocationData.fromLocation(lobby));
+            writer.flush();
+            this.kitLobby = lobby;
+            return true;
+        } catch (IOException ex) {
+            Log.error(this, ERROR_LOBBY_SAVE, ex);
+            return false;
+        }
+    }
+
     /**
      * Gets cached PlayerInfo instance for given player.
      *
@@ -169,6 +207,23 @@ public class PlayerInfoManager implements Loadable {
      */
     public void create(final Player player, final boolean excludeInventory) {
         final PlayerInfo info = new PlayerInfo(player, excludeInventory);
+
+        if (!config.isTeleportToLastLocation()) {
+            info.setLocation(lobby.clone());
+        }
+
+        cache.put(player.getUniqueId(), info);
+    }
+
+    /**
+     * Creates a cached PlayerInfo instance for given player with explicit experience restore control.
+     *
+     * @param player Player to create a cached PlayerInfo instance
+     * @param excludeInventory true to exclude inventory contents from being stored in PlayerInfo, false otherwise
+     * @param restoreExperience true to restore experience/level on return, false to keep any changes made during duel
+     */
+    public void create(final Player player, final boolean excludeInventory, final boolean restoreExperience) {
+        final PlayerInfo info = new PlayerInfo(player, excludeInventory, restoreExperience);
 
         if (!config.isTeleportToLastLocation()) {
             info.setLocation(lobby.clone());
@@ -224,6 +279,18 @@ public class PlayerInfoManager implements Loadable {
 
             if (info == null) {
                 return;
+            }
+
+            // Check if player is in a team match and is dead (spectator)
+            final ArenaImpl arena = arenaManager.get(player);
+            if (arena != null && arena.getMatch() instanceof TeamDuelMatch) {
+                TeamDuelMatch teamMatch = (TeamDuelMatch) arena.getMatch();
+                if (teamMatch.isDead(player)) {
+                    // Player is dead in team match, keep them in arena as spectator
+                    // Use the arena's first position as respawn location
+                    event.setRespawnLocation(arena.getPosition(1));
+                    return;
+                }
             }
 
             event.setRespawnLocation(info.getLocation());
