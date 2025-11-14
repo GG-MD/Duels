@@ -161,7 +161,6 @@ COMMAND:
           - '&6- &7Arena: &e%arena%'
           - '&6- &7Bet: &6$%bet_amount%'
           - '&6- &7Item Betting: &r%item_betting%'
-          - '{LINE}'
         sender-own-inventory:
           - '{LINE}'
           - '&7Duel request sent to &f%name%&7.'
@@ -170,7 +169,6 @@ COMMAND:
           - '&6- &7Bet: &6$%bet_amount%'
           - '&6- &7Item Betting: &r%item_betting%'
           - '&c&l⚠ WARNING: Own Inventory mode - you may lose your items!'
-          - '{LINE}'
         receiver:
           - '{LINE}'
           - '&7Duel request received from &f%name%&7.'
@@ -178,7 +176,6 @@ COMMAND:
           - '&6- &7Arena: &e%arena%'
           - '&6- &7Bet: &6$%bet_amount%'
           - '&6- &7Item Betting: &r%item_betting%'
-          - '{LINE}'
         receiver-own-inventory:
           - '{LINE}'
           - '&7Duel request received from &f%name%&7.'
@@ -187,7 +184,6 @@ COMMAND:
           - '&6- &7Bet: &6$%bet_amount%'
           - '&6- &7Item Betting: &r%item_betting%'
           - '&c&l⚠ WARNING: Own Inventory mode - you may lose your items!'
-          - '{LINE}'
         clickable-text:
           info:
             text: '&7Click to '
@@ -211,14 +207,12 @@ COMMAND:
           - '&f%owner% &7has sent a duel request sent to &f%name%''s Party&7.'
           - '&6- &7Kit: &3%kit%'
           - '&6- &7Arena: &e%arena%'
-          - '{LINE}'
         sender-party-own-inventory:
           - '{LINE}'
           - '&f%owner% &7has sent a duel request sent to &f%name%''s Party&7.'
           - '&6- &7Kit: &3%kit%'
           - '&6- &7Arena: &e%arena%'
           - '&c&l⚠ WARNING: Own Inventory mode - you may lose your items!'
-          - '{LINE}'
         receiver-party:
           - '{LINE}'
           - '&7Duel request received from &f%name%''s Party&7.'
