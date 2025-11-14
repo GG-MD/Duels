@@ -72,7 +72,7 @@ public class DuelCommand extends BaseCommand {
             return true;
         }
 
-        final Player target = Bukkit.getPlayerExact(args[0]);
+		final Player target = Bukkit.getPlayerExact(args[0]);
 
         // Treat vanished players as not found for players who cannot see them
         if (target == null || !player.canSee(target)) {
