@@ -62,23 +62,26 @@ public class RequestManager implements Loadable, Listener {
         get(sender, true).put(isParty ? request.getTargetParty().getOwner().getUuid() : target.getUniqueId(), request);
 
         final String kit = settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");
-        final String ownInventory = settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
 
         if (request.isPartyDuel()) {
             final Player targetPartyLeader = request.getTargetParty().getOwner().getPlayer();
-            lang.sendMessage(Collections.singleton(sender), "COMMAND.duel.party-request.send.sender-party",
-                    "owner", sender.getName(), "name", target.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena);
-            lang.sendMessage(targetPartyLeader, "COMMAND.duel.party-request.send.receiver-party",
-                    "name", sender.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena);
+            final String senderKey = settings.isOwnInventory() ? "COMMAND.duel.party-request.send.sender-party-own-inventory" : "COMMAND.duel.party-request.send.sender-party";
+            final String receiverKey = settings.isOwnInventory() ? "COMMAND.duel.party-request.send.receiver-party-own-inventory" : "COMMAND.duel.party-request.send.receiver-party";
+            lang.sendMessage(Collections.singleton(sender), senderKey,
+                    "owner", sender.getName(), "name", target.getName(), "kit", kit, "arena", arena);
+            lang.sendMessage(targetPartyLeader, receiverKey,
+                    "name", sender.getName(), "kit", kit, "arena", arena);
             sendClickableMessage("COMMAND.duel.party-request.send.clickable-text.", sender, Collections.singleton(targetPartyLeader));
         } else {
             final int betAmount = settings.getBet();
             final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
-            lang.sendMessage(sender, "COMMAND.duel.request.send.sender",
-                    "name", target.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
-            lang.sendMessage(target, "COMMAND.duel.request.send.receiver",
-                    "name", sender.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
+            final String senderKey = settings.isOwnInventory() ? "COMMAND.duel.request.send.sender-own-inventory" : "COMMAND.duel.request.send.sender";
+            final String receiverKey = settings.isOwnInventory() ? "COMMAND.duel.request.send.receiver-own-inventory" : "COMMAND.duel.request.send.receiver";
+            lang.sendMessage(sender, senderKey,
+                    "name", target.getName(), "kit", kit, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
+            lang.sendMessage(target, receiverKey,
+                    "name", sender.getName(), "kit", kit, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
             sendClickableMessage("COMMAND.duel.request.send.clickable-text.", sender, Collections.singleton(target));
         }
     }
