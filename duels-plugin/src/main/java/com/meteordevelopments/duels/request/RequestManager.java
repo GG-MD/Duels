@@ -73,6 +73,10 @@ public class RequestManager implements Loadable, Listener {
             lang.sendMessage(targetPartyLeader, receiverKey,
                     "name", sender.getName(), "kit", kit, "arena", arena);
             sendClickableMessage("COMMAND.duel.party-request.send.clickable-text.", sender, Collections.singleton(targetPartyLeader));
+            final String extraText = lang.getMessage("COMMAND.duel.party-request.send.clickable-text.extra.text");
+            if (extraText != null) {
+                targetPartyLeader.sendMessage(extraText);
+            }
         } else {
             final int betAmount = settings.getBet();
             final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
@@ -83,6 +87,10 @@ public class RequestManager implements Loadable, Listener {
             lang.sendMessage(target, receiverKey,
                     "name", sender.getName(), "kit", kit, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
             sendClickableMessage("COMMAND.duel.request.send.clickable-text.", sender, Collections.singleton(target));
+            final String extraText = lang.getMessage("COMMAND.duel.request.send.clickable-text.extra.text");
+            if (extraText != null) {
+                target.sendMessage(extraText);
+            }
         }
     }
 
@@ -95,7 +103,6 @@ public class RequestManager implements Loadable, Listener {
                 .add(lang.getMessage(path + "deny.text"),
                         ClickEvent.Action.RUN_COMMAND, "/duel deny " + sender.getName(),
                         Action.SHOW_TEXT, lang.getMessage(path + "deny.hover-text"))
-                .add(lang.getMessage(path + "extra.text"), null, null, Action.SHOW_TEXT, lang.getMessage(path + "extra.hover-text"))
                 .send(targets);
     }
 
