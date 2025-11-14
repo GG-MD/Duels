@@ -389,12 +389,18 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
             return;
         }
 
-        final String coloredMessage = StringUtil.color(message);
-        
         if (config.isArenaOnlyEndMessage()) {
-            sendActionBarWithDuration(match.getArena().getPlayers(), coloredMessage);
+            for (Player player : match.getArena().getPlayers()) {
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendMessage(message);
+                }
+            }
         } else {
-            sendActionBarWithDuration(Bukkit.getOnlinePlayers(), coloredMessage);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendMessage(message);
+                }
+            }
         }
     }
 
@@ -489,12 +495,18 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
                 "kit", kitName,
                 "arena", match.getArena().getName()
         );
-        
+
         if (config.isArenaOnlyEndMessage()) {
-            match.getArena().broadcast(message);
+            for (Player player : match.getArena().getPlayers()) {
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendMessage(message);
+                }
+            }
         } else {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.sendMessage(message);
+                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                    player.sendMessage(message);
+                }
             }
         }
     }
