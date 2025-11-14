@@ -389,16 +389,26 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
             return;
         }
 
-        if (config.isArenaOnlyEndMessage()) {
-            for (Player player : match.getArena().getPlayers()) {
-                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
-                    player.sendMessage(message);
-                }
+        if (!(match instanceof PartyDuelMatch)) {
+            final String coloredMessage = StringUtil.color(message);
+
+            if (config.isArenaOnlyEndMessage()) {
+                sendActionBarWithDuration(match.getArena().getPlayers(), coloredMessage);
+            } else {
+                sendActionBarWithDuration(Bukkit.getOnlinePlayers(), coloredMessage);
             }
         } else {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
-                    player.sendMessage(message);
+            if (config.isArenaOnlyEndMessage()) {
+                for (Player player : match.getArena().getPlayers()) {
+                    if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                        player.sendMessage(message);
+                    }
+                }
+            } else {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player.hasPermission(Permissions.VIEW_RESULT_ENDGAME)) {
+                        player.sendMessage(message);
+                    }
                 }
             }
         }

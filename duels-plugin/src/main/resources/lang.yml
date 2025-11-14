@@ -422,8 +422,17 @@ COMMAND:
       send:
         receiver:
           - '{LINE}'
-          - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party accept %name% &7to join the party.'
-          - '{LINE}'
+          - '{PREFIX} &7Party invite received from &f%name%&7.'
+        clickable-text:
+          info:
+            text: '&7Click to '
+            hover-text: ''
+          accept:
+            text: '&a&l[ACCEPT]'
+            hover-text: '&7Click to &aaccept &7this party invite.'
+          extra:
+            text: '{LINE}'
+            hover-text: ''
         members:
           - '{LINE}'
           - '{PREFIX} &f%owner% &7has invited &f%name% &7to the party!'

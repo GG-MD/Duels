@@ -1,5 +1,7 @@
 package com.meteordevelopments.duels.command.commands.party;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.meteordevelopments.duels.DuelsPlugin;
@@ -8,6 +10,9 @@ import com.meteordevelopments.duels.command.BaseCommand;
 import com.meteordevelopments.duels.command.commands.party.subcommands.*;
 import com.meteordevelopments.duels.data.UserData;
 import com.meteordevelopments.duels.party.Party;
+import com.meteordevelopments.duels.util.TextBuilder;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -94,8 +99,22 @@ public class PartyCommand extends BaseCommand {
         }
 
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.send.members", "owner", player.getName(), "name", target.getName());
-        lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", sender.getName());
+        lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", player.getName());
+        sendClickableMessage("COMMAND.party.invite.send.clickable-text.", player, Collections.singleton(target));
+        final String extraText = lang.getMessage("COMMAND.party.invite.send.clickable-text.extra.text");
+        if (extraText != null) {
+            target.sendMessage(extraText);
+        }
         return true;
+    }
+
+    private void sendClickableMessage(final String path, final Player sender, final Collection<Player> targets) {
+        TextBuilder
+                .of(lang.getMessage(path + "info.text"), null, null, Action.SHOW_TEXT, lang.getMessage(path + "info.hover-text"))
+                .add(lang.getMessage(path + "accept.text"),
+                        ClickEvent.Action.RUN_COMMAND, "/party accept " + sender.getName(),
+                        Action.SHOW_TEXT, lang.getMessage(path + "accept.hover-text"))
+                .send(targets);
     }
 
     @Override
