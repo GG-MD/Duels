@@ -7,6 +7,11 @@
 
 # IntelliJ
 out/
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
 
 # Compiled class file
 *.class
@@ -92,34 +97,33 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-# Cursor
-.cursor/
-
 # Windows shortcuts
 *.lnk
 
-target/
+.gradle
+build/
 
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
+# Ignore Gradle GUI config
+gradle-app.setting
 
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-.flattened-pom.xml
+# Cache of project
+.gradletasknamecache
+
+**/build/
 
 # Common working directory
 run/
-dependency-reduced-pom.xml
-/duels-api
-/.gradle
-/duels-plugin/build
-/duels-worldguard-v6/build
-/duels-worldguard-v7/build
-/duels-worldguard/build
-/duels-common/build
-.vscode/settings.json
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignoring library files
+!libs/
+!libs/**
+
+*/bin
+.vscode
+.idea
+
+# Claude Code
+.claude/
