@@ -124,6 +124,8 @@ run/
 */bin
 .vscode
 .idea
+.run
+.skidfuscator
 
 # Claude Code
 .claude/
