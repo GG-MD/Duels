@@ -41,6 +41,9 @@ public class ArenaData {
         // Manually bind kits and add locations to prevent saveArenas being called
         kits.stream().map(name -> plugin.getKitManager().get(name)).filter(Objects::nonNull).forEach(kit -> arena.getKits().add(kit));
         positions.forEach((key, value) -> arena.getPositions().put(key, value.toLocation()));
+
+        // Refresh GUI to add availability status to lore (custom lore is now preserved)
+        arena.refreshGui(arena.isAvailable());
         
         return arena;
     }
