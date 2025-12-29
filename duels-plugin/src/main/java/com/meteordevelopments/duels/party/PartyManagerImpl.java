@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import space.arim.morepaperlib.scheduling.ScheduledTask;
 
@@ -203,6 +204,32 @@ public class PartyManagerImpl implements Loadable, Listener {
 
         event.setCancelled(true);
         lang.sendMessage(damager, "ERROR.party.cannot-friendly-fire", "name", damaged.getName());
+    }
+
+    // Event handler for /event command to automatically remove player from duel party to avoid conflicts and errors
+    @EventHandler
+    public void on(final PlayerCommandPreprocessEvent event) {
+        final Player player = event.getPlayer();
+        final String command = event.getMessage().substring(1).split(" ")[0].toLowerCase();
+
+        if (!command.equalsIgnoreCase("event")) {
+            return;
+        }
+
+        final Party party = get(player);
+        if (party == null) {
+            return;
+        }
+
+        remove(player, party);
+
+        lang.sendMessage(player, "PARTY.leave.sender");
+
+        lang.sendMessage(party.getOnlineMembers(), "PARTY.leave.broadcast", "player", player.getName());
+
+        if (party.size() == 0) {
+            parties.remove(party);
+        }
     }
 
     @EventHandler
